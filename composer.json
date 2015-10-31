@@ -10,7 +10,6 @@
   ],
   "require": {
 	"php": ">=5.4.0",
-	"ext-iconv": "*",
 	"silex/silex": "1.3.*-dev",
 	"cartalyst/sentinel": "2.0.*"
   },
