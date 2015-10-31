@@ -75,8 +75,8 @@ class SilexCookie implements CookieInterface {
 
 		$this->dataOptions = array_merge($this->options, array('value'=>$this->request->cookies->get($this->options['name']))); // cloning the array
 
-		$this->dispatcher->addListener(KernelEvents::REQUEST, array($this, 'onKernelRequest'), 192);
-		$this->dispatcher->addListener(KernelEvents::RESPONSE, array($this, 'onKernelResponse'), -128);
+		$this->dispatcher->addListener(KernelEvents::REQUEST, array($this, 'onKernelRequest'));
+		$this->dispatcher->addListener(KernelEvents::RESPONSE, array($this, 'onKernelResponse'));
 	}
 	/**
 	 * {@inheritDoc}
