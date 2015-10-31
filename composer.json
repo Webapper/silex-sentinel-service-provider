@@ -1,0 +1,26 @@
+{
+  "name": "webapper/silex-sentinel",
+  "description": "A simple Silex service provider for Cartalyst Sentinel",
+  "license": "CC-4.0",
+  "authors": [
+	{
+	  "name": "Assarte D'Raven",
+	  "homepage": "http://webapper.hu"
+	}
+  ],
+  "require": {
+	"php": ">=5.4.0",
+	"ext-iconv": "*",
+	"silex/silex": "1.3.*-dev",
+	"cartalyst/sentinel": "2.0.*"
+  },
+  "autoload": {
+	"classmap": ["src/"]
+  },
+  "minimum-stability": "dev",
+  "extra": {
+	"branch-alias": {
+	  "dev-master": "1.0-dev"
+	}
+  }
+}
