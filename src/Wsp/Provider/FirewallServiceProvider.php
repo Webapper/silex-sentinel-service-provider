@@ -2,22 +2,19 @@
 /**
  * Created by PhpStorm.
  * User: assarte
- * Date: 2015.10.31.
- * Time: 18:14
+ * Date: 2015.11.01.
+ * Time: 1:02
  */
 
 namespace Wsp\Provider;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use Wsp\SentinelBootstrapper;
 
-
-class SentinelServiceProvider implements ServiceProviderInterface {
+class FirewallServiceProvider implements ServiceProviderInterface {
 	public function register(Application $app)
 	{
-		$bootstrapper = new SentinelBootstrapper($app);
-		$app['sentinel'] = $bootstrapper->createSentinel();
+		$app['sentinel'] = Sentinel::instance(new SentinelBootstrapper($app));
 	}
 
 	public function boot(Application $app)
