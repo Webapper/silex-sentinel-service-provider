@@ -17,6 +17,16 @@ class SentinelServiceProvider implements ServiceProviderInterface {
 	public function register(Application $app)
 	{
 		$app['sentinel'] = static::instance($app);
+		if (isset($app['sentinel.identities'])) {
+			foreach ($app['sentinel.addons'] as $k=>$config) {
+				$bootstrapper = 'Wsp\\SentinelBootstrapper';
+				if ($config['bootstrapper']) {
+					$bootstrapper = $config['bootstrapper'];
+				}
+				if (!class_exists($bootstrapper)) throw new \InvalidArgumentException('Class "'.$bootstrapper.'" not found for Sentinel identity: sentinel.identities.'.$k);
+				$app['sentinel.identity.'.$k] = static::instance($app, new $bootstrapper($app, 'sentinel.identities.'.$k));
+			}
+		}
 	}
 
 	/**
