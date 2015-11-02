@@ -64,6 +64,13 @@ class Director {
 	}
 
 	/**
+	 * @return Filter
+	 */
+	public function getFilter() {
+		return $this->filter;
+	}
+
+	/**
 	 * @return \Symfony\Component\HttpFoundation\RedirectResponse|void
 	 */
 	public function apply() {
@@ -83,12 +90,7 @@ class Director {
 				$applicable = $apply($apply, $this->firewalls[$firewall->getParentFirewall()]);
 			}
 			if ($applicable) {
-				$identityKey = 'sentinel';
-				if ($firewall->getIdentity() !== null) {
-					$identityKey = 'sentinel.identity.'.$firewall->getIdentity();
-					if (!isset($this->app[$identityKey])) throw new \RuntimeException('Identity manager "sentinel.identities.'.$firewall->getIdentity().'" looks unspecified for firewall: '.$firewall->getName());
-				}
-				$sentinel = $this->app[$identityKey];
+				$sentinel = $firewall->getSentinel();
 				if ($sentinel->check()) {
 					// maybe, nothing to do here...
 				} else {
