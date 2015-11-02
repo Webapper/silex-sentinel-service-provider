@@ -28,6 +28,7 @@ class GuardianServiceProvider implements ServiceProviderInterface {
 	{
 		$this->app = $app;
 		$app['sentinel.guardian'] = new Director($app, $app['sentinel.guardians']);
+		$app['sentinel.guardian.firewall'] = new \Wsp\Firewall\Director($app, $app['sentinel.firewalls']);
 	}
 
 	public function boot(Application $app)
