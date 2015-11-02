@@ -8,6 +8,7 @@
 
 namespace Wsp;
 
+use Cartalyst\Sentinel\Sentinel;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -162,6 +163,23 @@ class Firewall {
 		return $this->passed;
 	}
 
+	/**
+	 * @return Sentinel
+	 */
+	public function getSentinel() {
+		$identityKey = 'sentinel';
+		if ($this->getIdentity() !== null) {
+			$identityKey = 'sentinel.identity.'.$this->getIdentity();
+			if (!isset($this->app[$identityKey])) throw new \RuntimeException('Identity manager "sentinel.identities.'.$this->getIdentity().'" looks unspecified for firewall: '.$this->getName());
+		}
+		$sentinel = $this->app[$identityKey];
+		return $sentinel;
+	}
+
+	/**
+	 * @param Request $request
+	 * @return bool
+	 */
 	public function executeOn(Request $request) {
 		$passed = true;
 		if ($this->order[0] == 'deny' and $this->denyPattern) {
