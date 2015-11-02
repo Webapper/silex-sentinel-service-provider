@@ -25,14 +25,31 @@ class Filter {
 		}
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function hasFilteredFirewalls() {
 		return (count($this->firewalls) > 0);
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getFilteredFirewalls() {
 		return $this->firewalls;
 	}
 
+	/**
+	 * @return Firewall
+	 */
+	public function getLastFirewall() {
+		return $this->firewalls[array_keys($this->firewalls)[count($this->firewalls) - 1]];
+	}
+
+	/**
+	 * @param Firewall $firewall
+	 * @return bool
+	 */
 	public function isFiltered(Firewall $firewall) {
 		return isset($this->firewalls[$firewall->getName()]);
 	}
