@@ -27,6 +27,8 @@ class SentinelServiceProvider implements ServiceProviderInterface {
 				$app['sentinel.identity.'.$k] = static::instance($app, new $bootstrapper($app, 'sentinel.identities.'.$k));
 			}
 		}
+		$app->register(new FirewallServiceProvider());
+		$app->register(new GuardianServiceProvider());
 	}
 
 	/**
