@@ -23,15 +23,20 @@ class SentinelBootstrapper extends NativeBootstrapper {
 	 * Constructor.
 	 *
 	 * @param Application $app
-	 * @param string $config
+	 * @param string $configKey
 	 */
-	public function __construct(Application $app, $config = 'sentinel.config')
+	public function __construct(Application $app, $configKey = 'sentinel.config')
 	{
 		$reflection = new \ReflectionClass('Cartalyst\\Sentinel\\Sentinel');
 		$configPath = dirname(realpath($reflection->getFileName())).DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'config.php';
+		$config = $app[$configKey];
+		if (file_exists($configPath)) {
+			$config = require($configPath);
+			$config = array_merge($config, $app[$configKey]);
+		}
 
 		$this->app = $app;
-		$this->config = file_exists($configPath)? array_merge($app[$config], require($configPath)) : $app[$config];
+		$this->config = $config;
 	}
 
 	/**
