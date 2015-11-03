@@ -24,11 +24,12 @@ class SilexCookie implements CookieInterface {
 	 * @var array
 	 */
 	protected $options = array(
-		'name'      => 'cartalyst_sentinel',
-		'domain'    => '',
-		'path'      => '/',
-		'secure'    => false,
-		'http_only' => false,
+		'name'		=> 'cartalyst_sentinel',
+		'lifetime'	=> 0,
+		'domain'	=> '',
+		'path'		=> '/',
+		'secure'	=> false,
+		'http_only'	=> false,
 	);
 
 	/**
