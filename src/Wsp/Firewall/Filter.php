@@ -21,7 +21,7 @@ class Filter {
 	public function __construct(Request $request, array $firewalls) {
 		foreach ($firewalls as $firewall) {
 			/** @var $firewall Firewall */
-			if (!$firewall->executeOn($request)) {
+			if ($firewall->executeOn($request)) {
 				$this->firewalls[$firewall->getName()] = $firewall;
 			}
 		}
