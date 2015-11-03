@@ -99,7 +99,10 @@ class Firewall {
 		$this->name = $options['name'];
 		$this->allowPattern = $options['pattern']?: $options['allow_pattern']?: false;
 		$this->denyPattern = $options['deny_pattern']?: false;
-		$this->patternsType = $options['patterns_type']?: isset($app['sentinel.config']['patterns_type'])? strtolower($app['sentinel.config']['patterns_type']) : $this->patternsType;
+		$this->patternsType = (!empty($options['patterns_type'])? strtolower($options['patterns_type'])
+			: (isset($app['sentinel.config']['patterns_type'])? strtolower($app['sentinel.config']['patterns_type'])
+				: $this->patternsType))
+		;
 		$this->order = $options['order']?: array('deny', 'allow');
 		$this->parentFirewall = $options['parent']?: false;
 		$this->denyFallbackRoute = $options['deny_fallback_route']?: null;
