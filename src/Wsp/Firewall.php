@@ -84,6 +84,7 @@ class Firewall {
 		$this->name = $options['name'];
 		$this->allowPattern = $options['pattern']?: $options['allow_pattern']?: false;
 		$this->denyPattern = $options['deny_pattern']?: false;
+		$this->patternsType = $options['patterns_type']?: strtolower($app['sentinel.config.patterns_type'])?: $this->patternsType;
 		$this->order = $options['order']?: array('deny', 'allow');
 		$this->parentFirewall = $options['parent']?: false;
 		$this->denyFallbackRoute = $options['deny_fallback_route']?: null;
@@ -91,9 +92,6 @@ class Firewall {
 		$this->authSuccessRoute = $options['auth_success_route']?: null;
 		$this->authFailedRoute = $options['auth_failed_route']?: null;
 		$this->identity = $options['identity']?: null;
-
-		$config = $this->getConfig();
-		$this->patternsType = $options['patterns_type']?: strtolower($config['patterns_type'])?: $this->patternsType;
 	}
 
 	/**
