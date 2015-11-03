@@ -239,14 +239,14 @@ class Firewall {
 
 		if ($this->order[0] == 'deny' and $this->denyPattern) {
 			$passed = !(bool)preg_match('#'.str_replace('#', '\\#', $this->denyPattern).'#', $target);
-		} else if ($this->allowPattern) {
+		} else if ($this->order[0] == 'deny' and $this->allowPattern) {
 			$passed = (bool)preg_match('#'.str_replace('#', '\\#', $this->allowPattern).'#', $target);
 		}
 
 		if ($passed) {
 			if ($this->order[1] == 'deny' and $this->denyPattern) {
 				$passed = !(bool)preg_match('#'.str_replace('#', '\\#', $this->denyPattern).'#', $target);
-			} else if ($this->allowPattern) {
+			} else if ($this->order[1] == 'deny' and $this->allowPattern) {
 				$passed = (bool)preg_match('#'.str_replace('#', '\\#', $this->allowPattern).'#', $target);
 			}
 		}
