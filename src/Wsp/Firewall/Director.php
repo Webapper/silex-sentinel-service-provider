@@ -112,7 +112,7 @@ class Director {
 					$sentinelConfig = $refused->getConfig();
 					$route = $sentinelConfig['auth_route'];
 				}
-				if (!$route) throw new FirewallException($refused, 'Could not determine authentication route for firewall: %s');
+				if (!$route) continue;
 
 				return $this->app->redirect($route{0} == '/'? $route : $this->app['url_generator']->generate($route));
 			}
