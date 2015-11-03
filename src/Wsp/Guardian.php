@@ -55,7 +55,9 @@ class Guardian {
 
 		$this->app = $app;
 		$this->pattern = $guardianConfig['pattern'];
-		$this->patternType = $options['pattern_type']?: isset($app['sentinel.config']['patterns_type'])? strtolower($app['sentinel.config']['patterns_type']) : $this->patternType;
+		$this->patternType = ($options['pattern_type']? strtolower($options['pattern_type'])
+			: (isset($app['sentinel.config']['patterns_type'])? strtolower($app['sentinel.config']['patterns_type'])
+				: $this->patternType));
 		$this->roles = $guardianConfig['roles'];
 		if (!empty($guardianConfig['method'])) $this->checkingMethod = $guardianConfig['method'];
 	}
