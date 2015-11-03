@@ -93,7 +93,7 @@ class Firewall {
 		$this->identity = $options['identity']?: null;
 
 		$config = $this->getConfig();
-		$this->patternsType = $options['patterns_type']?: $config['patterns_type']?: strtolower($this->patternsType);
+		$this->patternsType = $options['patterns_type']?: strtolower($config['patterns_type'])?: $this->patternsType;
 	}
 
 	/**
