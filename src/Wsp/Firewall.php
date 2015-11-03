@@ -26,6 +26,10 @@ class Firewall {
 	 */
 	protected $denyPattern;
 	/**
+	 * @var string
+	 */
+	protected $patternsType = 'path'; // path, controller, route
+	/**
 	 * @var array
 	 */
 	protected $order = array('deny', 'allow');
@@ -66,7 +70,8 @@ class Firewall {
 		$failedFields = array();
 		if (empty($options['name'])) $failedFields[] = 'name';
 		if (empty($options['pattern']) and empty($options['allow_pattern']) and empty($options['deny_pattern'])) $failedFields[] = 'pattern or allow_pattern, and deny_pattern';
-		if (count($failedFields) > 0) throw new \InvalidArgumentException('You missed to specify a '.join(', and ', $failedFields));
+		if (!empty($options['patterns_type']) and !in_array(strtolower($options['patterns_type']), array('path', 'controller', 'route'))) $failedFields[] = 'invalid patterns_type value "'.$options['patterns_type'].'" - valids are: "path", "controller", "route"';
+		if (count($failedFields) > 0) throw new \InvalidArgumentException('You\'ve missed/failed specifying configuration of '.join(', and ', $failedFields));
 		if (!empty($options['order'])) {
 			$options['order'] = array_map(function($v) { return strtolower($v); }, $options['order']);
 		}
@@ -77,6 +82,7 @@ class Firewall {
 		$this->name = $options['name'];
 		$this->allowPattern = $options['pattern']?: $options['allow_pattern']?: false;
 		$this->denyPattern = $options['deny_pattern']?: false;
+		$this->patternsType = $options['patterns_type']?: strtolower($this->patternsType);
 		$this->order = $options['order']?: array('deny', 'allow');
 		$this->parentFirewall = $options['parent']?: false;
 		$this->denyFallbackRoute = $options['deny_fallback_route']?: null;
@@ -105,6 +111,13 @@ class Firewall {
 	 */
 	public function getDenyPattern() {
 		return $this->denyPattern;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getPatternsType() {
+		return $this->patternsType;
 	}
 
 	/**
@@ -182,17 +195,24 @@ class Firewall {
 	 */
 	public function executeOn(Request $request) {
 		$passed = true;
+		$target = '';
+		switch ($this->patternsType) {
+			case 'path': $target = $request->getRequestUri(); break;
+			case 'controller': $target = $request->get('_controller'); break;
+			case 'route': $target = $request->get('_route'); break;
+		}
+
 		if ($this->order[0] == 'deny' and $this->denyPattern) {
-			$passed = !(bool)preg_match('#'.str_replace('#', '\\#', $this->denyPattern).'#', $request->getRequestUri());
+			$passed = !(bool)preg_match('#'.str_replace('#', '\\#', $this->denyPattern).'#', $target);
 		} else if ($this->allowPattern) {
-			$passed = (bool)preg_match('#'.str_replace('#', '\\#', $this->allowPattern).'#', $request->getRequestUri());
+			$passed = (bool)preg_match('#'.str_replace('#', '\\#', $this->allowPattern).'#', $target);
 		}
 
 		if ($passed) {
 			if ($this->order[1] == 'deny' and $this->denyPattern) {
-				$passed = !(bool)preg_match('#'.str_replace('#', '\\#', $this->denyPattern).'#', $request->getRequestUri());
+				$passed = !(bool)preg_match('#'.str_replace('#', '\\#', $this->denyPattern).'#', $target);
 			} else if ($this->allowPattern) {
-				$passed = (bool)preg_match('#'.str_replace('#', '\\#', $this->allowPattern).'#', $request->getRequestUri());
+				$passed = (bool)preg_match('#'.str_replace('#', '\\#', $this->allowPattern).'#', $target);
 			}
 		}
 
