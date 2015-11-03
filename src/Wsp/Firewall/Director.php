@@ -40,7 +40,10 @@ class Director {
 	 */
 	public function __construct(Application $app, array $firewallsConfig) {
 		$this->app = $app;
-		foreach ($firewallsConfig as $options) {
+		foreach ($firewallsConfig as $name=>$options) {
+			if (!is_numeric($name)) {
+				$options['name'] = $name;
+			}
 			$firewall = new Firewall($app, $options);
 			$this->firewalls[$firewall->getName()] = $firewall;
 		}
