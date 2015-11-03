@@ -83,7 +83,7 @@ class Director {
 		$refused = null;
 
 		/* returns true if passed, false otherwise */
-		$apply = function($apply, Firewall $firewall) use ($refused) {
+		$apply = function($apply, Firewall $firewall) {
 			if (!$this->filter->isFiltered($firewall)) return true;
 
 			$applicable = true;
@@ -92,13 +92,12 @@ class Director {
 				// chaining up on parent firewalls to find out whether if this firewall could be applicable or not
 				$applicable = $apply($apply, $this->firewalls[$firewall->getParentFirewall()]);
 			}
-			if ($applicable) {
+			if ($applicable === true) {
 				$sentinel = $firewall->getSentinel();
 				if ($sentinel->check()) {
 					// maybe, nothing to do here...
 				} else {
-					$applicable = false;
-					$refused = $firewall;
+					$applicable = $firewall;
 				}
 			}
 
@@ -107,7 +106,7 @@ class Director {
 
 		foreach ($this->filter->getFilteredFirewalls() as $firewall) {
 			/** @var $firewall Firewall */
-			if (!$apply($apply, $firewall)) {
+			if (true !== $refused = $apply($apply, $firewall)) {
 				$route = $refused->getAuthRoute();
 				if (!$route) {
 					$sentinelConfig = $refused->getConfig();
