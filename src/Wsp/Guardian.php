@@ -21,7 +21,11 @@ class Guardian {
 	/**
 	 * @var string
 	 */
-	protected $pathPattern;
+	protected $pattern;
+	/**
+	 * @var string
+	 */
+	protected $patternType = 'path'; // path, controller, route
 	/**
 	 * @var array
 	 */
@@ -37,12 +41,14 @@ class Guardian {
 	protected $app;
 
 	public function __construct(Application $app, array $guardianConfig) {
-		if (empty($guardianConfig['path'])) throw new \InvalidArgumentException('Missing argument in config: path');
+		if (empty($guardianConfig['pattern'])) throw new \InvalidArgumentException('Missing argument in config: pattern');
+		if (!empty($options['pattern_type']) and !in_array(strtolower($options['pattern_type']), array('path', 'controller', 'route'))) throw new \InvalidArgumentException('invalid patterns_type value "'.$options['pattern_type'].'" for: '.$this->pattern.' - valids are: "path", "controller", "route"');
 		if (empty($guardianConfig['roles'])) $guardianConfig['roles'] = static::ROLE_GUEST;
 		if (!empty($guardianConfig['method']) and !in_array($guardianConfig['method'], array('has_access', 'has_any_access'))) throw new \InvalidArgumentException('Invalid argument value for method: '.$guardianConfig['method'].' - valid values are "has_access", "has_any_access"');
 
 		$this->app = $app;
-		$this->pathPattern = $guardianConfig['path'];
+		$this->pattern = $guardianConfig['pattern'];
+		$this->patternType = $options['pattern_type']?: strtolower($app['sentinel.config.patterns_type'])?: $this->patternType;
 		$this->roles = $guardianConfig['roles'];
 		if (!empty($guardianConfig['method'])) $this->checkingMethod = $guardianConfig['method'];
 	}
@@ -50,9 +56,16 @@ class Guardian {
 	/**
 	 * @return string
 	 */
-	public function getPathPattern()
+	public function getPattern()
 	{
-		return $this->pathPattern;
+		return $this->pattern;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getPatternType() {
+		return $this->patternType;
 	}
 
 	/**
@@ -73,7 +86,6 @@ class Guardian {
 
 	public function executeOn(Request $request) {
 		if ($this->roles == static::ROLE_GUEST) return true;
-		if (!preg_match('#'.str_replace('#', '\\#', $this->pathPattern).'#', $request->getRequestUri())) return true;
 
 		/** @var $director Director */
 		$director = $this->app['sentinel.guardian.firewall'];
@@ -83,6 +95,14 @@ class Guardian {
 			->getFilter()
 		;
 		if (!$filter->hasFilteredFirewalls()) throw new GuardianException($this, 'Unable to guard resource at '.$request->getRequestUri().' - no firewall matched');
+
+		$target = '';
+		switch ($this->patternType) {
+			case 'path': $target = $request->getRequestUri(); break;
+			case 'controller': $target = $request->get('_controller'); break;
+			case 'route': $target = $request->get('_route'); break;
+		}
+		if (!preg_match('#'.str_replace('#', '\\#', $this->pattern).'#', $target)) return true;
 
 		// only the last firewall can be relevant about roles, identities of previous firewalls should checked by
 		// another previous guardian
