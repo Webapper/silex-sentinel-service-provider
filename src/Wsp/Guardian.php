@@ -41,6 +41,13 @@ class Guardian {
 	protected $app;
 
 	public function __construct(Application $app, array $guardianConfig) {
+		$guardianConfig = array_merge(array(
+			'patter'		=> null,
+			'patter_type'	=> null,
+			'roles'			=> null,
+			'method'		=> null,
+		), $guardianConfig);
+
 		if (empty($guardianConfig['pattern'])) throw new \InvalidArgumentException('Missing argument in config: pattern');
 		if (!empty($options['pattern_type']) and !in_array(strtolower($options['pattern_type']), array('path', 'controller', 'route'))) throw new \InvalidArgumentException('invalid patterns_type value "'.$options['pattern_type'].'" for: '.$this->pattern.' - valids are: "path", "controller", "route"');
 		if (empty($guardianConfig['roles'])) $guardianConfig['roles'] = static::ROLE_GUEST;
@@ -48,7 +55,7 @@ class Guardian {
 
 		$this->app = $app;
 		$this->pattern = $guardianConfig['pattern'];
-		$this->patternType = $options['pattern_type']?: strtolower($app['sentinel.config.patterns_type'])?: $this->patternType;
+		$this->patternType = $options['pattern_type']?: isset($app['sentinel.config.patterns_type'])? strtolower($app['sentinel.config.patterns_type']) : $this->patternType;
 		$this->roles = $guardianConfig['roles'];
 		if (!empty($guardianConfig['method'])) $this->checkingMethod = $guardianConfig['method'];
 	}

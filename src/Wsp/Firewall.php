@@ -67,6 +67,21 @@ class Firewall {
 	protected $app;
 
 	public function __construct(Application $app, $options = array()) {
+		$options = array_merge(array(
+			'name'					=> null,
+			'pattern'				=> null,
+			'allow_pattern'			=> null,
+			'deny_pattern'			=> null,
+			'patterns_type'			=> null,
+			'order'					=> null,
+			'parent'				=> null,
+			'deny_fallback_route'	=> null,
+			'auth_route'			=> null,
+			'auth_success_route'	=> null,
+			'auth_failed_route'		=> null,
+			'identity'				=> null,
+		), $options);
+
 		$failedFields = array();
 		if (empty($options['name'])) $failedFields[] = 'name';
 		if (empty($options['pattern']) and empty($options['allow_pattern']) and empty($options['deny_pattern'])) $failedFields[] = 'pattern or allow_pattern, and deny_pattern';
@@ -84,7 +99,7 @@ class Firewall {
 		$this->name = $options['name'];
 		$this->allowPattern = $options['pattern']?: $options['allow_pattern']?: false;
 		$this->denyPattern = $options['deny_pattern']?: false;
-		$this->patternsType = $options['patterns_type']?: strtolower($app['sentinel.config.patterns_type'])?: $this->patternsType;
+		$this->patternsType = $options['patterns_type']?: isset($app['sentinel.config.patterns_type'])? strtolower($app['sentinel.config.patterns_type']) : $this->patternsType;
 		$this->order = $options['order']?: array('deny', 'allow');
 		$this->parentFirewall = $options['parent']?: false;
 		$this->denyFallbackRoute = $options['deny_fallback_route']?: null;
