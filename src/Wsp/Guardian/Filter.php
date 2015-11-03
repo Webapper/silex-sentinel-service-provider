@@ -53,7 +53,7 @@ class Filter {
 	public function isFiltered(Guardian $guardian) {
 		foreach ($this->guardians as $check) {
 			/** @var $check Guardian */
-			if ($check->getPathPattern() == $guardian->getPathPattern()) return true;
+			if ($check->getPattern() == $guardian->getPattern()) return true;
 		}
 		return false;
 	}

@@ -23,11 +23,12 @@ class SilexSession implements SessionInterface {
 	 * @var Session
 	 */
 	protected $session;
+
 	/**
 	 * Creates a new native session driver for Sentinel.
 	 *
-	 * @param  string  $key
-	 * @return void
+	 * @param Session $session
+	 * @param  string $key
 	 */
 	public function __construct(Session $session, $key = null)
 	{

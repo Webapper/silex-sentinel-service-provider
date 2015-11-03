@@ -99,7 +99,7 @@ class Firewall {
 		$this->name = $options['name'];
 		$this->allowPattern = $options['pattern']?: $options['allow_pattern']?: false;
 		$this->denyPattern = $options['deny_pattern']?: false;
-		$this->patternsType = $options['patterns_type']?: isset($app['sentinel.config.patterns_type'])? strtolower($app['sentinel.config.patterns_type']) : $this->patternsType;
+		$this->patternsType = $options['patterns_type']?: isset($app['sentinel.config']['patterns_type'])? strtolower($app['sentinel.config']['patterns_type']) : $this->patternsType;
 		$this->order = $options['order']?: array('deny', 'allow');
 		$this->parentFirewall = $options['parent']?: false;
 		$this->denyFallbackRoute = $options['deny_fallback_route']?: null;
@@ -198,11 +198,12 @@ class Firewall {
 	 */
 	public function getConfig() {
 		$identityKey = 'sentinel.config';
-		if ($this->getIdentity() !== null) {
-			$identityKey = 'sentinel.identities.'.$this->getIdentity();
-			if (!isset($this->app[$identityKey])) throw new \RuntimeException('Unspecified identity manager "sentinel.identities.'.$this->getIdentity().'" for firewall: '.$this->getName());
-		}
 		$sentinel = $this->app[$identityKey];
+		if ($this->getIdentity() !== null) {
+			$identityKey = 'sentinel.identities';
+			if (!isset($this->app[$identityKey][$this->getIdentity()])) throw new \RuntimeException('Unspecified identity manager "sentinel.identities.'.$this->getIdentity().'" for firewall: '.$this->getName());
+			$sentinel = $this->app[$identityKey][$this->getIdentity()];
+		}
 		return $sentinel;
 	}
 
@@ -211,11 +212,12 @@ class Firewall {
 	 */
 	public function getSentinel() {
 		$identityKey = 'sentinel';
+		$sentinel = $this->app[$identityKey];
 		if ($this->getIdentity() !== null) {
 			$identityKey = 'sentinel.identity.'.$this->getIdentity();
 			if (!isset($this->app[$identityKey])) throw new \RuntimeException('Identity manager "sentinel.identities.'.$this->getIdentity().'" looks unspecified for firewall: '.$this->getName());
+			$sentinel = $this->app[$identityKey];
 		}
-		$sentinel = $this->app[$identityKey];
 		return $sentinel;
 	}
 

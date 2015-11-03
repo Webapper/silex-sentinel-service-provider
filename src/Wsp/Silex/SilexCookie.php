@@ -59,8 +59,8 @@ class SilexCookie implements CookieInterface {
 	/**
 	 * Create a new cookie driver.
 	 *
-	 * @param  string|array  $options
-	 * @return void
+	 * @param EventDispatcher $dispatcher
+	 * @param  string|array $options
 	 */
 	public function __construct(EventDispatcher $dispatcher, $options = array())
 	{
