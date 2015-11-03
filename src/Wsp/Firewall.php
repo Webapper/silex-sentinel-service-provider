@@ -79,10 +79,11 @@ class Firewall {
 			throw new \InvalidArgumentException('Invalid order directive: '.join(', ', $options['order']));
 		}
 
+		$this->app = $app;
+
 		$this->name = $options['name'];
 		$this->allowPattern = $options['pattern']?: $options['allow_pattern']?: false;
 		$this->denyPattern = $options['deny_pattern']?: false;
-		$this->patternsType = $options['patterns_type']?: strtolower($this->patternsType);
 		$this->order = $options['order']?: array('deny', 'allow');
 		$this->parentFirewall = $options['parent']?: false;
 		$this->denyFallbackRoute = $options['deny_fallback_route']?: null;
@@ -90,6 +91,9 @@ class Firewall {
 		$this->authSuccessRoute = $options['auth_success_route']?: null;
 		$this->authFailedRoute = $options['auth_failed_route']?: null;
 		$this->identity = $options['identity']?: null;
+
+		$config = $this->getConfig();
+		$this->patternsType = $options['patterns_type']?: $config['patterns_type']?: strtolower($this->patternsType);
 	}
 
 	/**
@@ -174,6 +178,19 @@ class Firewall {
 	 */
 	public function isPassed() {
 		return $this->passed;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getConfig() {
+		$identityKey = 'sentinel.config';
+		if ($this->getIdentity() !== null) {
+			$identityKey = 'sentinel.identities.'.$this->getIdentity();
+			if (!isset($this->app[$identityKey])) throw new \RuntimeException('Unspecified identity manager "sentinel.identities.'.$this->getIdentity().'" for firewall: '.$this->getName());
+		}
+		$sentinel = $this->app[$identityKey];
+		return $sentinel;
 	}
 
 	/**
