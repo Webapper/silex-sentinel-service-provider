@@ -18,7 +18,7 @@ class GuardianException extends \Exception{
 
 	public function __construct(Guardian $guardian, $message = '', $code = 0, \Exception $previous = null) {
 		$this->guardian = $guardian;
-		parent::__construct(sprintf($message, $guardian->getPathPattern()), $code, $previous);
+		parent::__construct(sprintf($message, $guardian->getPattern()), $code, $previous);
 	}
 
 	public function getGuardian() {
