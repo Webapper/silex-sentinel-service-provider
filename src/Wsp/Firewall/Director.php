@@ -74,6 +74,17 @@ class Director {
 	}
 
 	/**
+	 * @param $route
+	 * @return Firewall
+	 */
+	public function getFirewallByAuthRoute($route) {
+		foreach ($this->firewalls as $firewall) {
+			/** @var $firewall Firewall */
+			if ($firewall->getAuthRoute() == $route) return $firewall;
+		}
+	}
+
+	/**
 	 * @return \Symfony\Component\HttpFoundation\RedirectResponse|void
 	 */
 	public function apply() {
