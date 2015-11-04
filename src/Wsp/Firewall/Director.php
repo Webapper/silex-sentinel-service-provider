@@ -110,7 +110,7 @@ class Director {
 				$route = $refused->getAuthRoute();
 				if (!$route) {
 					$sentinelConfig = $refused->getConfig();
-					$route = $sentinelConfig['auth_route'];
+					$route = isset($sentinelConfig['auth_route'])? $sentinelConfig['auth_route'] : false;
 				}
 				if (!$route) continue;
 
