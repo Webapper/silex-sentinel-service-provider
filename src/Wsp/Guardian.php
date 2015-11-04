@@ -119,10 +119,12 @@ class Guardian {
 
 		$passed = false;
 		try {
-			if ($this->checkingMethod == 'has_access') {
-				$passed = (bool)$sentinel->hasAccess($this->roles);
-			} else {
-				$passed = (bool)$sentinel->hasAnyAccess($this->roles);
+			if (!$passed = (bool)$sentinel->hasAccess(static::ROLE_ROOT)) {
+				if ($this->checkingMethod == 'has_access') {
+					$passed = (bool)$sentinel->hasAccess($this->roles);
+				} else {
+					$passed = (bool)$sentinel->hasAnyAccess($this->roles);
+				}
 			}
 		} catch (\BadMethodCallException $e) {
 			// in case of user is unidentified by the requested identity:
